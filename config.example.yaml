@@ -1,0 +1,67 @@
+# Preen — copy to config.yaml and edit. All values shown are the built-in defaults.
+
+paths:
+  music_dir: "~/Music/Preen"   # your royalty-free / licensed tracks (for auto-scoring music)
+  work_dir: "./data"                # per-video working output lives here
+
+models:
+  detector: "yolo11m-seg.pt"        # seg weights (auto-downloaded); masks drive head tracking
+  vlm: "gemma4:12b-it-qat"          # local Ollama vision model used for scoring (fast default)
+  vlm_high: "gemma4:26b-a4b-it-qat" # optional higher-accuracy model (MoE, still quick)
+
+detect:                  # stage 1 — find segments that actually contain a bird
+  sample_fps: 2.0        # frames/sec scanned for presence (recall-oriented, cheap)
+  scale_width: 1280      # downscale width for detection (feeder birds stay large enough)
+  conf: 0.30             # min YOLO confidence to count as a bird
+  min_bird_frac: 0.0025  # ignore specks smaller than this fraction of the frame area
+  merge_gap_s: 1.5       # detections closer than this are merged into one segment
+  pad_lead_s: 0.6        # seconds of lead-in kept before the first detection
+  pad_tail_s: 1.0        # seconds of tail kept after the last detection
+  min_segment_s: 5.0     # drop segments shorter than this (too short for a Short)
+  batch: 16              # frames per YOLO batch
+  device: "mps"          # "mps" (Apple GPU), "cpu", or "cuda"
+  hwaccel: "videotoolbox" # ffmpeg hardware decode on macOS; "" to disable
+
+score:                   # stage 2 — judge species + how interesting/beautiful
+  frames_per_segment: 5  # frames sampled per segment for the VLM (ratings averaged)
+  highlight_s: 14.0      # default highlight clip length (preview + default in/out)
+  crop_margin: 0.25      # expand the bird bbox by this fraction before cropping for the VLM
+  crop_width: 512        # resize the crop to this width before sending to the VLM
+  # natural-language steering handed to the vision model:
+  preference: >
+    These are stills from a backyard fixed-camera bird feeder, curated for YouTube Shorts.
+    Favor colorful, striking, or uncommon birds and interesting behavior (feeding, squabbles,
+    fledglings, takeoff, wings spread). Treat very common 'little brown jobs' — house sparrows,
+    European starlings, pigeons, common grackles — as low interest unless the shot is exceptional.
+  favor: ["woodpecker", "cardinal", "blue jay", "bluebird", "goldfinch", "oriole", "nuthatch", "chickadee", "warbler", "hummingbird"]
+  demote: ["house sparrow", "sparrow", "european starling", "starling", "pigeon", "rock dove", "common grackle", "grackle"]
+
+render:                  # stage 4 — finish the Short
+  width: 1080            # output shape: 1080x1920 (9:16) or 1080x1560; or use --aspect
+  height: 1920
+  fps: auto              # "auto" = source_fps × speed (60→30, 50→25) for 1:1 frames; or set a number
+  speed: 0.5             # 0.5 = half speed; high-fps source -> smooth slow-mo with no interpolation
+  tracking: true         # follow the bird with the 9:16 crop window
+  track_smooth: 0.12     # EMA factor for crop motion (smaller = smoother / slower to react)
+  max_pan_px_per_frame: 18 # cap crop pan speed (full-res px) to avoid jitter
+  codec: hevc_vt          # hevc_vt (HW HEVC, fast) | x265 | x264 | av1
+  quality: high           # high | medium | low
+  bitrate: "8M"           # used by hevc_vt
+  music_vol: 0.85         # 0..1 backing-music level
+  natural_vol: 0.2        # 0..1 original-audio level (mixed under music)
+  music_lufs: -16        # loudness-normalize the music bed to this LUFS
+  keep_natural_audio: true
+  natural_audio_lufs: -26 # duck the original ambient audio under the music
+  fade_s: 0.4            # audio/video fade in-out
+  caption_species: true  # overlay the identified species name (optional; --no-caption to skip)
+  head_anchor: 0.30      # tracking focus: fraction down the bbox (~head height)
+  tonemap: hable         # PQ HDR tone-map operator
+  hdr_contrast: 1.06     # post-tonemap contrast (fixes grey/washed HDR look)
+  hdr_saturation: 1.15   # post-tonemap saturation
+  watermark:
+    enabled: false       # --watermark to turn on for a render
+    image: ""            # path to a PNG/logo (takes priority over text)
+    text: ""             # or a text watermark, e.g. your channel handle
+    position: br         # tl | tr | bl | br
+    opacity: 0.85
+    scale: 0.14          # logo width as a fraction of video width

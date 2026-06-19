@@ -1,0 +1,14 @@
+# Install into a venv that reuses your system torch (MPS):
+#   python3 -m venv --system-site-packages .venv
+#   .venv/bin/pip install -r requirements.txt
+#
+# torch / torchvision are intentionally NOT pinned here — they come from your
+# base environment (torch 2.11 + MPS). ultralytics pulls opencv, numpy, pyyaml,
+# requests, pillow transitively.
+
+ultralytics>=8.4
+fastapi>=0.110
+uvicorn[standard]>=0.27
+
+# System dependencies (not pip): ffmpeg + ffprobe, and a running Ollama server
+# with a vision model, e.g.:  ollama pull gemma3:12b   (or your gemma4 vision build)

@@ -1,3 +1,18 @@
+Metadata-Version: 2.4
+Name: preenbird
+Version: 0.1.0
+Summary: Preen — auto-edit fixed-camera bird footage into vertical YouTube Shorts.
+Author: Xiuwen Zheng
+License-Expression: AGPL-3.0-or-later
+Keywords: bird-watching,video-editing,youtube-shorts,yolo,object-detection,computer-vision,ffmpeg,fastapi
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: ultralytics>=8.4
+Requires-Dist: fastapi>=0.110
+Requires-Dist: uvicorn[standard]>=0.27
+Dynamic: license-file
+
 # Preen
 
 🐦 **Preen** — auto-edit fixed-camera bird videos into 9:16 YouTube Shorts: AI detection, subject tracking, slow-mo & music.
