@@ -20,9 +20,9 @@ preen export <video…>   ④′ Final Cut Pro project (.fcpxml) instead of a re
 ## Install
 
 ```bash
+python3 -m venv --system-site-packages ~/venv/preenbird   # reuse system torch (MPS / CUDA)
 cd preenbird
-python3 -m venv --system-site-packages .venv     # reuse system torch (MPS / CUDA)
-.venv/bin/pip install -e .
+~/venv/preenbird/bin/pip install -e .
 ```
 
 External system dependencies (not pip):

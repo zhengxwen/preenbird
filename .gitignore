@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# Virtualenv (the venv now lives at ~/venv/preenbird; ignore any local one too)
+.venv/
+venv/
+
+# Preen runtime output & local config
+data/
+inbox/
+config.yaml
+
+# Model weights — large & license-bound (auto-downloaded, or copied in locally)
+*.pt
+*.pth
+weights/
+
+# macOS / editors
+.DS_Store
+.idea/
+.vscode/

@@ -8,11 +8,11 @@
 # then just run `preen scan my_clip.mov` from any directory.
 
 PREEN_ROOT="$HOME/Documents/Codes/Working/preenbird"
-PY="$PREEN_ROOT/.venv/bin/python"
+PY="$HOME/venv/preenbird/bin/python"
 
 if [ ! -x "$PY" ]; then
   echo "preen: venv python not found at $PY" >&2
-  echo "  (create it with: cd \"$PREEN_ROOT\" && python3 -m venv .venv && .venv/bin/pip install -e .)" >&2
+  echo "  (create it with: python3 -m venv --system-site-packages ~/venv/preenbird && cd \"$PREEN_ROOT\" && ~/venv/preenbird/bin/pip install -e .)" >&2
   exit 1
 fi
 
