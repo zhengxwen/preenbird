@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "preenbird"
+version = "0.1.0"
+description = "Preen — auto-edit fixed-camera bird footage into vertical YouTube Shorts."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "AGPL-3.0-or-later"
+authors = [{ name = "Xiuwen Zheng" }]
+keywords = [
+    "bird-watching", "video-editing", "youtube-shorts", "yolo",
+    "object-detection", "computer-vision", "ffmpeg", "fastapi",
+]
+dependencies = [
+    "ultralytics>=8.4",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "python-multipart>=0.0.9",   # FastAPI file uploads (review UI "Add videos")
+    # torch / torchvision are intentionally NOT pinned — they come from your base
+    # environment (e.g. torch + MPS on macOS, or CUDA on the RTX 5090 box).
+    # ffmpeg + ffprobe and a running Ollama vision model are external system deps.
+]
+
+[project.scripts]
+preen = "preenbird.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["preenbird*"]
+
+[tool.setuptools.package-data]
+"preenbird.review" = ["static/*"]

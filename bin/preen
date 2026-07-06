@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# preen — launch the Preen CLI from its project venv WITHOUT changing your current
+# directory. Relative paths (input videos, the ./data work dir) are resolved against
+# wherever you run this from, not against the project folder.
+#
+# Install once, e.g.:
+#   ln -s ~/Documents/Codes/Working/preenbird/bin/preen /usr/local/bin/preen
+# then just run `preen scan my_clip.mov` from any directory.
+
+PREEN_ROOT="$HOME/Documents/Codes/Working/preenbird"
+PY="$PREEN_ROOT/.venv/bin/python"
+
+if [ ! -x "$PY" ]; then
+  echo "preen: venv python not found at $PY" >&2
+  echo "  (create it with: cd \"$PREEN_ROOT\" && python3 -m venv .venv && .venv/bin/pip install -e .)" >&2
+  exit 1
+fi
+
+# PYTHONPATH makes the `preenbird` package importable without a `cd`, so the
+# caller's working directory is preserved (input videos and ./data resolve there).
+# exec replaces this shell; "$@" forwards all arguments unchanged.
+exec env PYTHONPATH="$PREEN_ROOT${PYTHONPATH:+:$PYTHONPATH}" "$PY" -m preenbird "$@"

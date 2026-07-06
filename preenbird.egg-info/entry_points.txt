@@ -1,0 +1,2 @@
+[console_scripts]
+preen = preenbird.cli:main

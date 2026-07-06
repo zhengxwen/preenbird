@@ -1,0 +1,83 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preen Review</title>
+<script>(function(){var t=localStorage.getItem('preen-theme');if(t&&t!=='system')document.documentElement.dataset.theme=t;})();</script>
+<link rel="stylesheet" href="/static/styles.css"></head><body>
+<header>
+  <h1>🐦 Preen Review</h1>
+  <span id="count" class="meta"></span>
+  <span class="spacer"></span>
+  <label class="opt">aspect <select id="aspect" onchange="syncAspect()"><option value="9:16">9:16 · 1080×1920</option><option value="1080x1560">1080×1560</option></select></label>
+  <label class="opt">zoom <input id="zoom" type="number" value="1.0" step="0.1" min="0.3" max="1"></label>
+  <label class="opt"><input id="caption" type="checkbox" checked> caption</label>
+  <label class="opt"><input id="watermark" type="checkbox"> watermark</label>
+  <label class="opt"><input id="mute" type="checkbox"> mute</label>
+  <button class="ghost" onclick="openAdd()">➕ Add videos</button>
+  <button class="ghost" onclick="toggleOut()">⚙ Output</button>
+  <button id="themeBtn" class="ghost" onclick="cycleTheme()" title="Theme — click to cycle System / Light / Dark"></button>
+  <button class="ghost" onclick="reload()">↻</button>
+  <button id="exportBtn" class="ghost" onclick="exportSel()">Export FCPXML (<span id="ne">0</span>)</button>
+  <button id="renderBtn" onclick="renderSel()">Render selected (<span id="n">0</span>)</button>
+</header>
+<svg width="0" height="0" style="position:absolute"><defs id="svgdefs"></defs></svg>
+<audio id="aud"></audio>
+<div id="outbar">
+  <label class="opt">Codec <select id="codec">
+    <option value="hevc_vt">HEVC (HW, fast)</option>
+    <option value="x265">x265 (smaller)</option>
+    <option value="x264">x264 (compatible)</option>
+    <option value="av1">AV1 (smallest, slow)</option></select></label>
+  <label class="opt">Quality <select id="quality">
+    <option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></label>
+  <label class="opt">Music vol <input id="musicvol" type="range" min="0" max="1" step="0.05" value="0.85" oninput="$('mvv').textContent=(+this.value).toFixed(2)"><span id="mvv">0.85</span></label>
+  <label class="opt">Original vol <input id="natvol" type="range" min="0" max="1" step="0.05" value="0.20" oninput="$('nvv').textContent=(+this.value).toFixed(2)"><span id="nvv">0.20</span></label>
+</div>
+<div id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="mbox">
+    <video id="mvid" playsinline></video>
+    <div class="mtrack" id="mtrack">
+      <div class="mband" id="mband"></div>
+      <div class="mh" id="mhin" data-lbl="IN"></div>
+      <div class="mh" id="mhout" data-lbl="OUT"></div>
+      <div class="mhead" id="mhead"></div>
+    </div>
+    <div class="mrow">
+      <button id="mplay" onclick="mToggle()">▶ Play</button>
+      <span id="mtime" class="meta mclip">0.0 / 0.0s</span>
+      <span class="spacer"></span>
+      <label class="meta">in <input id="min" class="mnum" type="number" step="0.1" min="0"></label>
+      <label class="meta">out <input id="mout" class="mnum" type="number" step="0.1" min="0"></label>
+      <span id="mlen" class="meta mclip"></span>
+      <button class="ghost" onclick="setInOut('in')" title="set IN to the current playhead">⇤ here</button>
+      <button class="ghost" onclick="setInOut('out')" title="set OUT to the current playhead">here ⇥</button>
+      <button onclick="closeModal()">Close</button>
+    </div>
+    <div id="mhint" class="meta"></div>
+  </div>
+</div>
+<div id="addmodal" onclick="if(event.target===this)closeAdd()">
+  <div class="mbox addbox">
+    <div class="mrow"><b>➕ Add videos</b><span class="meta">upload from this device, or pick existing files on the backend, then scan</span>
+      <span class="spacer"></span><button class="ghost" onclick="closeAdd()">Close</button></div>
+    <div class="addrow">
+      <label class="uploadbtn ghostbtn">⬆ Upload from this device
+        <input id="uplinput" type="file" accept="video/*" multiple style="display:none" onchange="uploadFiles(this.files)"></label>
+      <span id="uplmsg" class="meta"></span>
+      <span class="spacer"></span>
+      <button class="ghost" onclick="selectAllSrc(true)">All</button>
+      <button class="ghost" onclick="selectAllSrc(false)">None</button>
+      <button class="ghost" onclick="loadSources()">↻ Refresh</button>
+    </div>
+    <div id="srchint" class="meta"></div>
+    <div id="srclist" class="srclist"></div>
+    <div class="mrow">
+      <button id="scanBtn" onclick="scanSelected()" disabled>Scan selected (<span id="ns">0</span>)</button>
+      <span class="spacer"></span>
+      <span id="scanprog" class="meta"></span>
+      <button id="scanCancelBtn" class="ghost" style="display:none" onclick="cancelScan()">Cancel</button>
+    </div>
+  </div>
+</div>
+<div id="root"></div>
+<div id="toast"></div>
+<script src="/static/app.js"></script></body></html>
